@@ -92,7 +92,6 @@ function CounterRegulator(props: CounterRegulatorType) {
         localStorage.setItem('startValueForReset', JSON.stringify(startValue))
         localStorage.setItem('maxValue', JSON.stringify(maxValue))
 
-
         props.setNewSettings(true)
         props.setDisableReset(true)
         props.setDisableInc(false)
