@@ -5,18 +5,18 @@ import c from './counter.module.css'
 type BtnType = {
     title: string
     disabled: boolean
-    function: ()=> void
+    function: () => void
 }
 
 function Btn(props: BtnType) {
     return (
         <button className={c.btn} style={
             {
-                cursor: !props.disabled ? "pointer" : '',
-                color: !props.disabled ? "#09ff00" : "red"
+                cursor: props.disabled ? "" : 'pointer',
+                color: props.disabled ? "red" : "#09ff00"
             }
         }
-                disabled={props.disabled} onClick={props.function} >
+                disabled={props.disabled} onClick={props.function}>
 
             {props.title}
         </button>

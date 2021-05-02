@@ -11,12 +11,9 @@ type CounterRegulatorType = {
     setDisableReset: (value: boolean) => void
     setStartValue: (value: number) => void
     setMaxValue: (value: number) => void
-
 }
 
-
 function CounterRegulator(props: CounterRegulatorType) {
-
 
     let [error, setError] = useState<boolean>(false)
 
@@ -24,22 +21,19 @@ function CounterRegulator(props: CounterRegulatorType) {
     let [startValue, setStartValue] = useState<number>(0)
     let [disable, setDisable] = useState<boolean>(true)
 
-
     useEffect(() => {
+
         let newStartValueStr = localStorage.getItem('startValue')
+
         if (newStartValueStr) {
+
             let newStartValue = JSON.parse(newStartValueStr)
             props.setStartValue(newStartValue)
+            props.setStartValueForReset(newStartValue)
             setStartValue(newStartValue)
-        }
-    }, [localStorage.getItem('startValue')])
 
-    useEffect(() => {
-        let newStartResetValueStr = localStorage.getItem('startValueForReset')
-        if (newStartResetValueStr) {
-            let newStartResetValue = JSON.parse(newStartResetValueStr)
-            props.setStartValueForReset(newStartResetValue)
         }
+
     }, [localStorage.getItem('startValue')])
 
     useEffect(() => {

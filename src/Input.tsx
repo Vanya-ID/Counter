@@ -13,7 +13,6 @@ function Input(props: InputType) {
     return (
         <input
             className={props.error ? c.error : ''}
-            style={{backgroundColor: props.value < 0 ? 'red' : ''}}
             value={props.value}
             type="number"
             onChange={props.valueHandler}
