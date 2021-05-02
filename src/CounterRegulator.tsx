@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import React, {ChangeEvent,  useState} from 'react';
 import c from './CounterRegulator.module.css'
 import Btn from './Btn';
 import Input from "./Input";
@@ -21,41 +21,17 @@ function CounterRegulator(props: CounterRegulatorType) {
     let [startValue, setStartValue] = useState<number>(0)
     let [disable, setDisable] = useState<boolean>(true)
 
-    useEffect(() => {
-
-        let newStartValueStr = localStorage.getItem('startValue')
-
-        if (newStartValueStr) {
-
-            let newStartValue = JSON.parse(newStartValueStr)
-            props.setStartValue(newStartValue)
-            props.setStartValueForReset(newStartValue)
-            setStartValue(newStartValue)
-
-        }
-
-    }, [localStorage.getItem('startValue')])
-
-    useEffect(() => {
-        let newMaxValueStr = localStorage.getItem('maxValue')
-        if (newMaxValueStr) {
-            let newMaxValue = JSON.parse(newMaxValueStr)
-            props.setMaxValue(newMaxValue)
-            setMaxValue(newMaxValue)
-        }
-    }, [localStorage.getItem('maxValue')])
-
 
     const maxValueHandler = (e: ChangeEvent<HTMLInputElement>) => {
         props.setNewSettings(false)
-        setMaxValue(+e.currentTarget.value)
+        setMaxValue(Math.floor(e.currentTarget.valueAsNumber))
         props.setDisableReset(true)
         props.setDisableInc(true)
         setDisable(false)
     }
     const startValueHandler = (e: ChangeEvent<HTMLInputElement>) => {
         props.setNewSettings(false)
-        setStartValue(+e.currentTarget.value)
+        setStartValue(Math.floor(e.currentTarget.valueAsNumber))
         props.setDisableReset(true)
         props.setDisableInc(true)
         setDisable(false)
@@ -85,6 +61,13 @@ function CounterRegulator(props: CounterRegulatorType) {
         localStorage.setItem('startValue', JSON.stringify(startValue))
         localStorage.setItem('startValueForReset', JSON.stringify(startValue))
         localStorage.setItem('maxValue', JSON.stringify(maxValue))
+
+        props.setStartValue(startValue)
+        props.setStartValueForReset(startValue)
+        setStartValue(startValue)
+
+        props.setMaxValue(maxValue)
+        setMaxValue(maxValue)
 
         props.setNewSettings(true)
         props.setDisableReset(true)
@@ -121,12 +104,13 @@ function CounterRegulator(props: CounterRegulatorType) {
 
             </div>
             <div className={c.forSet}>
-                <div>
-                    <Btn title={'SET'}
-                         disabled={error ? true : disable}
-                         function={setValueOnClick}
-                    />
-                </div>
+
+                <Btn
+                    title={'SET'}
+                     disabled={error ? true : disable}
+                     function={setValueOnClick}
+                />
+
             </div>
         </div>
     )

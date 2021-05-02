@@ -12,7 +12,7 @@ type InputType = {
 function Input(props: InputType) {
     return (
         <input
-            className={props.error ? c.error : ''}
+            className={props.error ? c.error : c.input}
             value={props.value}
             type="number"
             onChange={props.valueHandler}

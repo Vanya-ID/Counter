@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import e from './counter.module.css'
 import Btn from "./Btn";
@@ -17,6 +17,25 @@ function App() {
     let [newSettings, setNewSettings] = useState<boolean>(true)
 
     let [error, setError] = useState<boolean>(false)
+
+    useEffect(() => {
+
+        let newStartValueStr = localStorage.getItem('startValue')
+
+        if (newStartValueStr) {
+            let newStartValue = JSON.parse(newStartValueStr)
+            setStartValue(newStartValue)
+        }
+
+    }, [])
+
+    useEffect(() => {
+        let newMaxValueStr = localStorage.getItem('maxValue')
+        if (newMaxValueStr) {
+            let newMaxValue = JSON.parse(newMaxValueStr)
+            setMaxValue(newMaxValue)
+        }
+    }, [])
 
 
     const addCount = () => {
@@ -48,14 +67,16 @@ function App() {
                 setMaxValue={setMaxValue}
             />
 
-            <div>
+            <div className={e.countDiv}>
                 <div style={
                     {
                         fontSize: newSettings ? '52px' : '20px',
-                        color: error ? 'red' : 'white'
+                        color: error || maxValue===startValue ? 'red' : 'white'
                     }
                 }
-                     className={e.count}>{error ? 'Incorrect Value!' : newSettings ? startValue : 'Set new settings!'}
+                     className={e.count}
+                >
+                    {error ? 'Incorrect Value!' : newSettings ? startValue : 'Set new settings!'}
                 </div>
                 <div className={e.forBtn}>
                     <Btn

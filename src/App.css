@@ -1,8 +1,8 @@
 .App {
-  padding: 30px;
+  padding: 0;
   display: flex;
-}
 
-.App > div {
-  margin-right: 50px;
+}
+body{
+  background-image: url("https://bipbap.ru/wp-content/uploads/2017/05/879142.jpg");
 }
