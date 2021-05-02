@@ -43,12 +43,23 @@
 
 .error {
     border: 1px solid red;
-    background-color: red;
+    border-radius: 15px;
+    box-shadow: 0 0 15px #aea5a5;
+    font-size: 14px;
+    background-color: inherit;
+    color: red;
+    text-align: center;
+    padding: 4px;
+    margin-left:  10px;
+}
+
+.error:focus{
+    outline: none;
+
 }
 
 .input {
     border: 1px solid white;
-
     border-radius: 15px;
     box-shadow: 0 0 15px #aea5a5;
     font-size: 14px;
