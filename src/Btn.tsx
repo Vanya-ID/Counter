@@ -4,7 +4,7 @@ import c from './counter.module.css'
 
 type BtnType = {
     title: string
-    disabled: boolean
+    disabled: boolean | undefined
     function: () => void
 }
 

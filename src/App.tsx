@@ -1,92 +1,82 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import './App.css';
 import e from './counter.module.css'
 import Btn from "./Btn";
 import CounterRegulator from "./CounterRegulator";
+import {useDispatch, useSelector} from "react-redux";
+import {AppStateType} from "./redux/store";
+import {
+    setValueAC,
+    resetCounterValueAC,
+    setMaxValueFromLocalAC,
+    setStartValueFromLocalAC, setErrorAC
+} from "./redux/counterReducer";
 
 function App() {
 
-
-    let [disableInc, setDisableInc] = useState<boolean>(false)
-    let [disableReset, setDisableReset] = useState<boolean>(true)
-
-    let [startValue, setStartValue] = useState<number>(0)
-    let [startValueForReset, setStartValueForReset] = useState<number>(0)
-    let [maxValue, setMaxValue] = useState<number>(5)
-
-    let [newSettings, setNewSettings] = useState<boolean>(true)
-
-    let [error, setError] = useState<boolean>(false)
+    const counterState = useSelector((state: AppStateType) => state.counter)
+    let dispatch = useDispatch()
 
     useEffect(() => {
-
         let newStartValueStr = localStorage.getItem('startValue')
-
         if (newStartValueStr) {
             let newStartValue = JSON.parse(newStartValueStr)
-            setStartValue(newStartValue)
+            dispatch(setStartValueFromLocalAC(newStartValue))
+            dispatch(setValueAC(newStartValue))
         }
-
-    }, [])
-
-    useEffect(() => {
         let newMaxValueStr = localStorage.getItem('maxValue')
         if (newMaxValueStr) {
             let newMaxValue = JSON.parse(newMaxValueStr)
-            setMaxValue(newMaxValue)
+            dispatch(setMaxValueFromLocalAC(newMaxValue))
         }
-    }, [])
+    }, [dispatch])
 
 
     const addCount = () => {
-        startValue += 1
-        setStartValue(startValue)
-        if (maxValue <= startValue) {
-            setDisableInc(true)
+        counterState.value += 1
+        dispatch(setValueAC(counterState.value))
+        if (counterState.maxValue <= counterState.value) {
+            dispatch(setErrorAC({disableInc: true}))
         }
-        setDisableReset(false)
+        dispatch(setErrorAC({disableReset: false}))
     }
 
 
     const resetCount = () => {
-        setStartValue(startValueForReset)
-        setDisableReset(true)
-        setDisableInc(false)
+        let newStartValueStr = localStorage.getItem('startValue')
+        if (newStartValueStr) {
+            let newStartValue = JSON.parse(newStartValueStr)
+            dispatch(resetCounterValueAC(newStartValue))
+        }
+        dispatch(setErrorAC({disableReset: true, disableInc: false}))
     }
 
 
     return (
         <div className={e.div}>
             <CounterRegulator
-                setError={setError}
-                setNewSettings={setNewSettings}
-                setStartValueForReset={setStartValueForReset}
-                setDisableInc={setDisableInc}
-                setDisableReset={setDisableReset}
-                setStartValue={setStartValue}
-                setMaxValue={setMaxValue}
             />
 
             <div className={e.countDiv}>
                 <div style={
                     {
-                        fontSize: newSettings ? '52px' : '20px',
-                        color: error || maxValue===startValue ? 'red' : 'white'
+                        fontSize: counterState.errors.isSettingsActive ? '52px' : '20px',
+                        color: counterState.errors.error || counterState.maxValue === counterState.value ? 'red' : 'white'
                     }
                 }
                      className={e.count}
                 >
-                    {error ? 'Incorrect Value!' : newSettings ? startValue : 'Set new settings!'}
+                    {counterState.errors.error ? 'Incorrect Value!' : counterState.errors.isSettingsActive ? counterState.value : 'Set new settings!'}
                 </div>
                 <div className={e.forBtn}>
                     <Btn
                         title={'INC'}
-                        disabled={disableInc}
+                        disabled={counterState.errors.disableInc}
                         function={addCount}
                     />
                     <Btn
                         title={'RESET'}
-                        disabled={disableReset}
+                        disabled={counterState.errors.disableReset}
                         function={resetCount}
                     />
 

@@ -1,78 +1,47 @@
-import React, {ChangeEvent,  useState} from 'react';
+import React, {ChangeEvent} from 'react';
 import c from './CounterRegulator.module.css'
 import Btn from './Btn';
 import Input from "./Input";
+import {useDispatch, useSelector} from "react-redux";
+import {AppStateType} from "./redux/store";
+import {setErrorAC, setMaxValueFromLocalAC, setStartValueFromLocalAC, setValueAC} from "./redux/counterReducer";
 
-type CounterRegulatorType = {
-    setError: (value: boolean) => void
-    setNewSettings: (value: boolean) => void
-    setStartValueForReset: (value: number) => void
-    setDisableInc: (value: boolean) => void
-    setDisableReset: (value: boolean) => void
-    setStartValue: (value: number) => void
-    setMaxValue: (value: number) => void
-}
+type CounterRegulatorType = {}
 
 function CounterRegulator(props: CounterRegulatorType) {
 
-    let [error, setError] = useState<boolean>(false)
-
-    let [maxValue, setMaxValue] = useState<number>(5)
-    let [startValue, setStartValue] = useState<number>(0)
-    let [disable, setDisable] = useState<boolean>(true)
+    const counterRegulatorState = useSelector((state: AppStateType) => state.counter)
+    let dispatch = useDispatch()
 
 
     const maxValueHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        props.setNewSettings(false)
-        setMaxValue(Math.floor(e.currentTarget.valueAsNumber))
-        props.setDisableReset(true)
-        props.setDisableInc(true)
-        setDisable(false)
+        dispatch(setMaxValueFromLocalAC(Math.floor(e.currentTarget.valueAsNumber)))
+        dispatch(setErrorAC({disableReset: true, disableInc: true, isSettingsActive: false}))
     }
     const startValueHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        props.setNewSettings(false)
-        setStartValue(Math.floor(e.currentTarget.valueAsNumber))
-        props.setDisableReset(true)
-        props.setDisableInc(true)
-        setDisable(false)
+        dispatch(setErrorAC({isSettingsActive: false, disableReset: true, disableInc: true, disableSet: false}))
+        dispatch(setStartValueFromLocalAC((Math.floor(e.currentTarget.valueAsNumber))))
     }
 
     const errorMessage = () => {
-        if (maxValue <= startValue) {
-            setError(true)
-            setDisable(true)
-            props.setError(true)
-        } else if (maxValue < 0) {
-            setError(true)
-            setDisable(true)
-            props.setError(true)
-        } else if (startValue < 0) {
-            setError(true)
-            setDisable(true)
-            props.setError(true)
+        if (counterRegulatorState.maxValue <= counterRegulatorState.startValue || counterRegulatorState.maxValue < 0 || counterRegulatorState.startValue < 0) {
+            dispatch(setErrorAC({errorForRegulator: true, disableSet: true, error: true}))
         } else {
-            setError(false)
-            props.setError(false)
+            dispatch(setErrorAC({errorForRegulator: false, error: false, disableSet: false}))
         }
     }
 
 
     const setValueOnClick = () => {
-        localStorage.setItem('startValue', JSON.stringify(startValue))
-        localStorage.setItem('startValueForReset', JSON.stringify(startValue))
-        localStorage.setItem('maxValue', JSON.stringify(maxValue))
+        localStorage.setItem('startValue', JSON.stringify(counterRegulatorState.startValue))
+        localStorage.setItem('maxValue', JSON.stringify(counterRegulatorState.maxValue))
 
-        props.setStartValue(startValue)
-        props.setStartValueForReset(startValue)
-        setStartValue(startValue)
+        dispatch(setStartValueFromLocalAC(counterRegulatorState.startValue))
+        dispatch(setValueAC(counterRegulatorState.startValue))
+        dispatch(setMaxValueFromLocalAC(counterRegulatorState.maxValue))
 
-        props.setMaxValue(maxValue)
-        setMaxValue(maxValue)
+        dispatch(setErrorAC({isSettingsActive: true, disableReset: true, disableInc: false, disableSet: true}))
 
-        props.setNewSettings(true)
-        props.setDisableReset(true)
-        props.setDisableInc(false)
-        setDisable(true)
     }
 
 
@@ -83,8 +52,8 @@ function CounterRegulator(props: CounterRegulatorType) {
                 <div className={c.childDiv}>
                     <span>max value:</span>
                     <Input
-                        error={error}
-                        value={maxValue}
+                        error={counterRegulatorState.errors.errorForRegulator}
+                        value={counterRegulatorState.maxValue}
                         valueHandler={maxValueHandler}
                         mouseErrorMessage={errorMessage}
                         keyUpErrorMessage={errorMessage}
@@ -94,8 +63,8 @@ function CounterRegulator(props: CounterRegulatorType) {
                 <div className={c.childDiv}>
                     <span>start value:</span>
                     <Input
-                        error={error}
-                        value={startValue}
+                        error={counterRegulatorState.errors.errorForRegulator}
+                        value={counterRegulatorState.startValue}
                         valueHandler={startValueHandler}
                         mouseErrorMessage={errorMessage}
                         keyUpErrorMessage={errorMessage}
@@ -107,8 +76,8 @@ function CounterRegulator(props: CounterRegulatorType) {
 
                 <Btn
                     title={'SET'}
-                     disabled={error ? true : disable}
-                     function={setValueOnClick}
+                    disabled={counterRegulatorState.errors.errorForRegulator ? true : counterRegulatorState.errors.disableSet}
+                    function={setValueOnClick}
                 />
 
             </div>

@@ -2,7 +2,7 @@ import React, {ChangeEvent, MouseEvent, KeyboardEvent} from 'react';
 import c from "./CounterRegulator.module.css";
 
 type InputType = {
-    error: boolean
+    error: boolean | undefined
     value: number
     valueHandler: (e: ChangeEvent<HTMLInputElement>) => void
     mouseErrorMessage: (e: MouseEvent<HTMLInputElement>) => void
